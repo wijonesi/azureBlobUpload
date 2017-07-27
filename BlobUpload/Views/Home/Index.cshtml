@@ -4,21 +4,94 @@
     <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
 </div>
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
+    <input type="file" id="upload_files" name="files[]" /><br />
+    Block Size: <input type="number" id="block_size" value="512" name="block_size" />KB<br />
+    <input type="button" id="upload_button_blob" name="upload" value="Upload Blob (async)" />
+
+    @section scripts {
+    <script src="~/Scripts/async.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $("#upload_button_blob").click(function () {
+                if (window.File && window.Blob && window.FormData) {
+                }
+                else {
+                    alert('File uploads are not supported by your browser. Please download and install the latest version of Internet Explorer');
+                    return;
+                }
+
+                var files = $("#upload_files")[0].files;
+
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var fileSize = file.size;
+                    var fileName = file.name;
+                    var blockSizeInKB = $("#block_size").val();
+                    var blockSize = blockSizeInKB * 1024;
+                    var blocks = [];
+                    var offset = 0;
+                    var index = 0;
+                    var list = "";
+
+                    while (offset < fileSize) {
+                        var start = offset;
+                        var end = Math.min(offset + blockSize, fileSize);
+                        blocks.push({
+                            name: fileName,
+                            index: index,
+                            start: start,
+                            end: end
+                        });
+
+                        list += index + ",";
+
+                        offset = end;
+                        index++;
+                    }
+
+                    //begin upload code
+                    var putBlocks = [];
+                    
+                    blocks.forEach(function (block) {
+                        putBlocks.push(function (callback) {
+                            var blob = file.slice(block.start, block.end);
+                            var fd = new FormData();
+                            fd.append("name", block.name);
+                            fd.append("index", block.index);
+                            fd.append("file", blob);
+                            $.ajax({
+                                url: "/Home/UploadInFormData",
+                                data: fd,
+                                cache: false,
+                                processData: false,
+                                contentType: false,
+                                type: "POST",
+                                success: function (result) {
+                                    if (!result.success) {
+                                        alert(result.error);
+                                    }
+                                    callback(null, block.index);
+                                }
+                            });
+                        });
+                    });
+
+                    async.series(putBlocks, function (error, result) {
+                        var data = {
+                            name: fileName,
+                            list: list
+                        };
+                        $.post("/Home/Commit", data, function (result) {
+                            if (!result.success) {
+                                alert(result.error);
+                            }
+                            else { alert('Done!'); }
+                        });
+                    });
+                    //end upload code
+                }
+            });
+        });
+    </script>
+    }
 </div>
