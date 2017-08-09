@@ -19,10 +19,10 @@ namespace BlobUpload.Controllers
             public static string StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=" + StorageAccountName + ";AccountKey=" + StorageAccountKey; // for Azure Commercial only (MAC)
 
             // Microsoft Azure Commercial (MAC)
-            public static CloudStorageAccount Account = CloudStorageAccount.Parse(StorageConnectionString);
+            //public static CloudStorageAccount Account = CloudStorageAccount.Parse(StorageConnectionString);
 
             // Microsoft Azure Government (MAG)
-            //public static CloudStorageAccount Account = new CloudStorageAccount(new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(StorageAccountName, StorageAccountKeyMAG), StorageEndPoint, useHttps: true);
+            public static CloudStorageAccount Account = new CloudStorageAccount(new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(StorageAccountName, StorageAccountKeyMAG), StorageEndPoint, useHttps: true);
         }
 
         public ActionResult Index()

@@ -1,12 +1,11 @@
 ﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    <img src="~/images/bArtboard-2.jpg" />
+    <p class="lead">Enriching our community by providing child support services in an efficient, effective and professional manner, one family at a time.</p>
+    <p><a href="http://cssd.lacounty.gov/about-us/" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
 </div>
 <div class="row">
-    <input type="file" id="upload_files" name="files[]" /><br />
-    Block Size: <input type="number" id="block_size" value="512" name="block_size" />KB<br />
-    <input type="button" id="upload_button_blob" name="upload" value="Upload Blob (async)" />
+    Choose a file:&nbsp;<input type="file" id="upload_files" name="files[]" /><br />
+    <input type="button" id="upload_button_blob" name="upload" value="Upload File" />
 
     @section scripts {
     <script src="~/Scripts/async.js"></script>
@@ -26,7 +25,7 @@
                     var file = files[i];
                     var fileSize = file.size;
                     var fileName = file.name;
-                    var blockSizeInKB = $("#block_size").val();
+                    var blockSizeInKB = 512;
                     var blockSize = blockSizeInKB * 1024;
                     var blocks = [];
                     var offset = 0;
